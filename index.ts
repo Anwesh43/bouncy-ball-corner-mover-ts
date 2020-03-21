@@ -4,7 +4,7 @@ const scGap : number = 0.02
 const strokeFactor : number = 90
 const sizeFactor : number = 2.9
 const rFactor : number = 30
-const delay : number = 5
+const delay : number = 30
 const nodes : number = 5
 const corners : number = 4
 const foreColor : string = "#2196f3"
@@ -22,6 +22,41 @@ class ScaleUtil {
 
     static sinify(scale : number) : number {
         return Math.sin(scale * Math.PI)
+    }
+}
+
+class DrawingUtil {
+
+    static drawCircle(context : CanvasRenderingContext2D, x : number, y : number, r : number) {
+        context.beginPath()
+        context.arc(x, y, r, 0, 2 * Math.PI)
+        context.fill()
+    }
+
+    static drawBouncyCornerBall(context : CanvasRenderingContext2D, i : number, scale : number, size : number) {
+        const sc : number = ScaleUtil.divideScale(scale, i, corners)
+        const sf : number = ScaleUtil.sinify(sc)
+        const r : number = size / rFactor
+        context.save()
+        context.rotate(i * Math.PI / 2)
+        DrawingUtil.drawCircle(context, size * sc, 0, r)
+        context.restore()
+    }
+
+    static drawBouncyCornerBalls(context : CanvasRenderingContext2D, scale : number, size : number) {
+        for (var i = 0; i < corners; i++) {
+            DrawingUtil.drawBouncyCornerBall(context, i, scale, size)
+        }
+    }
+
+    static drawBCBMNode(context : CanvasRenderingContext2D, i : number, scale : number) {
+        context.fillStyle = foreColor
+        const gap : number = h / (nodes + 1)
+        const size : number = gap / sizeFactor
+        context.save()
+        context.translate(w / 2, gap * (i + 1))
+        DrawingUtil.drawBouncyCornerBalls(context, scale, size)
+        context.restore()
     }
 }
 
