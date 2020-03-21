@@ -49,7 +49,7 @@ class DrawingUtil {
         }
     }
 
-    static drawBCBMNode(context : CanvasRenderingContext2D, i : number, scale : number) {
+    static drawBBCMNode(context : CanvasRenderingContext2D, i : number, scale : number) {
         context.fillStyle = foreColor
         const gap : number = h / (nodes + 1)
         const size : number = gap / sizeFactor
@@ -130,7 +130,52 @@ class Animator {
     stop() {
         if (this.animated) {
             this.animated = false
-            clearInterval(this.interval) 
+            clearInterval(this.interval)
         }
+    }
+}
+
+class BBCMNode {
+
+    next : BBCMNode
+    prev : BBCMNode
+    state : State = new State()
+
+    constructor(private i : number) {
+        this.addNeighbor()
+    }
+
+    addNeighbor() {
+        if (this.i < nodes - 1) {
+            this.next = new BBCMNode(this.i + 1)
+            this.next.prev = this
+        }
+    }
+
+    draw(context : CanvasRenderingContext2D) {
+        DrawingUtil.drawBBCMNode(context, this.i, this.state.scale)
+        if (this.next) {
+            this.next.draw(context)
+        }
+    }
+
+    update(cb : Function) {
+        this.state.update(cb)
+    }
+
+    startUpdating(cb : Function) {
+        this.state.startUpdating(cb)
+    }
+
+    getNext(dir : number, cb : Function) : BBCMNode {
+        var curr : BBCMNode = this.prev
+        if (dir == 1) {
+            curr = this.next
+        }
+        if (curr) {
+            return curr
+        }
+        cb()
+        return this
     }
 }
