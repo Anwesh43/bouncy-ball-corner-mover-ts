@@ -203,3 +203,26 @@ class BouncyBallCornerMover {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+
+    animator : Animator = new Animator()
+    bbcm : BouncyBallCornerMover = new BouncyBallCornerMover()
+
+    render(context : CanvasRenderingContext2D) {
+        this.bbcm.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.bbcm.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.bbcm.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+
+}
